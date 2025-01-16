@@ -26,13 +26,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8026257517420652407}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2590251523701172782}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &8819932043942768722
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -95,7 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2590251523701172782}
-  - component: {fileID: 3441658444510155626}
+  - component: {fileID: 8930302422726548587}
   m_Layer: 0
   m_Name: Ant
   m_TagString: Untagged
@@ -119,7 +119,7 @@ Transform:
   - {fileID: 6885831851211595790}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3441658444510155626
+--- !u!114 &8930302422726548587
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -128,6 +128,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8396048096891471763}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be95c5ccc06f46368385cba7cdd056c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 85ab546d98cf48e7b656bb25786bc734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

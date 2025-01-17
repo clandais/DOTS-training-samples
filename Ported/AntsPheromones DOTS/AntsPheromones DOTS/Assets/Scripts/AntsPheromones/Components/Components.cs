@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace AntsV2.Components
+namespace AntsPheromones.Components
 {
 
 	public struct Ant : IComponentData
@@ -106,5 +106,6 @@ namespace AntsV2.Components
 		public float TrailDecaySpeed;
 
 
+		public float SimulationSpeed;
 	}
 }

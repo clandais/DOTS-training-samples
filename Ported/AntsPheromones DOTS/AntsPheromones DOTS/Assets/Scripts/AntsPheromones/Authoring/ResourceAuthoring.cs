@@ -1,4 +1,4 @@
-using AntsV2.Components;
+using AntsPheromones.Components;
 using Unity.Entities;
 using UnityEngine;
 

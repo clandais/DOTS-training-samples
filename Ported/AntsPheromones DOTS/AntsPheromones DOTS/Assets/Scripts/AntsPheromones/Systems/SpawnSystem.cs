@@ -1,5 +1,5 @@
 using System;
-using AntsV2.Components;
+using AntsPheromones.Components;
 using NativeTrees;
 using Unity.Burst;
 using Unity.Collections;
@@ -12,60 +12,40 @@ namespace AntsPheromones.Systems
 {
 	public partial struct SpawnSystem : ISystem
 	{
-		private Random random;
+		private Random _random;
 
-		//[BurstCompile]
+		[BurstCompile]
 		public void OnCreate(ref SystemState state)
 		{
 			state.RequireForUpdate<Colony>();
-
-			random = Random.CreateFromIndex((uint)DateTime.Now.Millisecond);
+			_random = Random.CreateFromIndex(state.GlobalSystemVersion);
 		}
 
 		[BurstCompile]
 		public void OnUpdate(ref SystemState state)
 		{
+			state.Enabled = false;
+			
 			var colony = SystemAPI.GetSingleton<Colony>();
-
 			SpawnHome(ref state, colony);
 			SpawnResource(ref state, colony);
 			SpawnObstacles(ref state, colony);
 			SpawnAnts(ref state, colony);
-			SpawnPhenomones(ref state, colony);
-
-
-			state.Enabled = false;
+			SpawnPheromones(ref state, colony);
 		}
 
-		private void SpawnPhenomones(ref SystemState state, Colony colony)
+		private void SpawnPheromones(ref SystemState state, Colony colony)
 		{
 			float mapSize = colony.MapSize;
 			int pheromoneCount = (int)mapSize * (int)mapSize;
-
-			//	var pheromones = state.EntityManager.Instantiate(colony.PheromonePrefab, pheromoneCount, Allocator.Temp);
-
 			Entity pheromoneEntity = state.EntityManager.CreateEntity();
 			var pheromoneBuffer = state.EntityManager.AddBuffer<PheromoneBufferElement>(pheromoneEntity);
 			pheromoneBuffer.ResizeUninitialized(pheromoneCount);
 
 
-			for (int i = 0; i < pheromoneCount; i++)
-			{
-
+			for (int i = 0; i < pheromoneCount; i++) 
 				pheromoneBuffer[i] = new PheromoneBufferElement { Strength = 0f };
-			}
-
-			// int index = 0;
-			// foreach (var (localTransform, pheromone, color) in SystemAPI.Query<RefRW<LocalTransform>, RefRW<Pheromone>, RefRW<URPMaterialPropertyBaseColor>>())
-			// {
-			// 	pheromone.ValueRW.Index = index;
-			// 	localTransform.ValueRW.Position = new float3(index % mapSize, 0f, index / mapSize);
-			// 	
-			// 	pheromoneBuffer[index] = new PheromoneBufferElement { Value = 0f, Entity = pheromones[index] };
-			// 	color.ValueRW.Value = new float4(0f, 0f, 0f, 1f);
-			// 	
-			// 	index++;
-			// }
+			
 		}
 
 		private void SpawnAnts(ref SystemState state, Colony colony)
@@ -77,7 +57,7 @@ namespace AntsPheromones.Systems
 			         in SystemAPI.Query<RefRW<Position>, RefRW<Direction>, RefRW<LocalTransform>, RefRW<Speed>>()
 				         .WithAll<Ant>())
 			{
-				position.ValueRW.Value = new float2(random.NextFloat(-5f, 5f) + mapSize * .5f, random.NextFloat(-5f, 5f) + mapSize * .5f);
+				position.ValueRW.Value = new float2(_random.NextFloat(-5f, 5f) + mapSize * .5f, _random.NextFloat(-5f, 5f) + mapSize * .5f);
 				direction.ValueRW.Value = 225;
 				speed.ValueRW.Value = colony.AntTargetSpeed;
 				//localTransform.ValueRW.Scale = colony.AntScale;
@@ -100,8 +80,8 @@ namespace AntsPheromones.Systems
 				float ringRadius = i / (ringCount + 1f) * (mapSize * .5f);
 				float circumference = 2f * math.PI * ringRadius;
 				int maxCount = (int)(circumference / (obstacleRadius * 2f) * 2f);
-				int offset = random.NextInt(0, maxCount);
-				int holeCount = random.NextInt(1, 3);
+				int offset = _random.NextInt(0, maxCount);
+				int holeCount = _random.NextInt(1, 3);
 
 				for (int j = 0; j < maxCount; ++j)
 				{
@@ -146,7 +126,7 @@ namespace AntsPheromones.Systems
 		{
 			Entity resource = state.EntityManager.Instantiate(colony.ResourcePrefab);
 			float mapSize = colony.MapSize;
-			float resourceAngle = random.NextFloat(0f, math.PI * 2f);
+			float resourceAngle = _random.NextFloat(0f, math.PI * 2f);
 
 			float2 position = new float2(1, 1) * colony.MapSize * .5f +
 			                  new float2(math.cos(resourceAngle), math.sin(resourceAngle))

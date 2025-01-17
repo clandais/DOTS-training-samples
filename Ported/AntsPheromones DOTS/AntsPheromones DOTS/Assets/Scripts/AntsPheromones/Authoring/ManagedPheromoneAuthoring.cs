@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace AntsPheromones.Authoring
@@ -9,7 +10,8 @@ namespace AntsPheromones.Authoring
 
 		public Material Material;
 		public Mesh Mesh;
-
+		public Color BaseColor;
+		
 		#endregion
 		#region Nested type: ${0}
 
@@ -19,7 +21,19 @@ namespace AntsPheromones.Authoring
 			{
 				Entity entity = GetEntity(TransformUsageFlags.None);
 				AddComponent(entity, new PheromoneSingleton());
-				AddComponentObject(entity, new ManagedPheromoneComponent { Material = authoring.Material, Mesh = authoring.Mesh });
+
+				float4 baseColor;
+				baseColor.x = authoring.BaseColor.linear.r;
+				baseColor.y = authoring.BaseColor.linear.g;
+				baseColor.z = authoring.BaseColor.linear.b;
+				baseColor.w = authoring.BaseColor.linear.a;
+				
+				AddComponentObject(entity, new ManagedPheromoneComponent
+				{
+					Material = authoring.Material, 
+					Mesh = authoring.Mesh,
+					BaseColor = baseColor,
+				});
 			}
 		}
 
@@ -30,6 +44,8 @@ namespace AntsPheromones.Authoring
 	{
 		public Material Material;
 		public Mesh Mesh;
+		public float4 BaseColor;
+		public float4 EmissionColor;
 	}
 
 	public struct PheromoneSingleton : IComponentData

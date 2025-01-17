@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Material: {fileID: 2100000, guid: 6e29d7ae795ec4f4eb96757b1c4df5c6, type: 2}
   Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  BaseColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!4 &1004994938
 Transform:
   m_ObjectHideFlags: 0
@@ -200,24 +201,25 @@ MonoBehaviour:
   resourcePrefab: {fileID: 3933734832302972383, guid: 8aca6a88685041c4d9c4ec7b887d784d, type: 3}
   pheromonePrefab: {fileID: 2755945398408904908, guid: c4f87b0707251b049a8034124cfdf7e7, type: 3}
   colony:
-    MapSize: 128
-    ObstacleFill: 0.7
-    ObstacleRadius: 2
+    MapSize: 256
+    ObstacleFill: 0.8
+    ObstacleRadius: 1.5
     RingCount: 4
-    AntCount: 10000
+    AntCount: 50000
     AntTargetSpeed: 0.2
     AntAcceleration: 0.07
     RandomSteering: 0.14
     GoalSteeringStrength: 0.04
-    WallNearbySeekRadius: 1
-    WallSeekDistance: 1
+    WallNearbySeekRadius: 1.5
+    WallSeekDistance: 1.5
     WallSteeringStrength: 0.12
     PheromoneSeekDistance: 3
-    PheromoneSteeringStrength: 0.03
-    OutwardStrength: 0.001
-    InWardStrength: 0.001
-    TrailAddSpeed: 0.03
-    TrailDecaySpeed: 0.9985
+    PheromoneSteeringStrength: 0.015
+    OutwardStrength: 0.003
+    InWardStrength: 0.003
+    TrailAddSpeed: 0.3
+    TrailDecaySpeed: 0.001
+    SimulationSpeed: 1
 --- !u!4 &1060249766
 Transform:
   m_ObjectHideFlags: 0

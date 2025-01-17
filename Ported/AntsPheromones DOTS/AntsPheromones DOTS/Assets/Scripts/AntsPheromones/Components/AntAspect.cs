@@ -1,5 +1,5 @@
 using AntsPheromones.Authoring;
-using AntsV2.Components;
+using AntsPheromones.Components;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;

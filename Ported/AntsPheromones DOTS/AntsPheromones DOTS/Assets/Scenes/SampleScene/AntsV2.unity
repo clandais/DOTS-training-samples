@@ -202,23 +202,26 @@ MonoBehaviour:
   pheromonePrefab: {fileID: 2755945398408904908, guid: c4f87b0707251b049a8034124cfdf7e7, type: 3}
   colony:
     MapSize: 256
-    ObstacleFill: 0.8
+    ObjectsPerNode: 16
+    MaxDepth: 12
+    ObstacleFill: 0.75
     ObstacleRadius: 1.5
-    RingCount: 4
+    RingCount: 5
     AntCount: 50000
-    AntTargetSpeed: 0.2
-    AntAcceleration: 0.07
+    AntTargetSpeed: 0.5
+    AntAcceleration: 0.02
+    AntScale: 1
     RandomSteering: 0.14
     GoalSteeringStrength: 0.04
-    WallNearbySeekRadius: 1.5
-    WallSeekDistance: 1.5
-    WallSteeringStrength: 0.12
+    WallNearbySeekRadius: 4
+    WallSeekDistance: 2
+    WallSteeringStrength: 0.25
     PheromoneSeekDistance: 3
     PheromoneSteeringStrength: 0.015
     OutwardStrength: 0.003
     InWardStrength: 0.003
     TrailAddSpeed: 0.3
-    TrailDecaySpeed: 0.001
+    TrailDecaySpeed: 0.9985
     SimulationSpeed: 1
 --- !u!4 &1060249766
 Transform:

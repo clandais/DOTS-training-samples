@@ -1,5 +1,6 @@
 using System;
 using NativeTrees;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -17,6 +18,16 @@ namespace AntsPheromones.Components
 	}
 
 	public struct Position : IComponentData
+	{
+		public float2 Value;
+	}
+
+	public struct Velocity : IComponentData
+	{
+		public float2 Value;
+	}
+	
+	public struct Acceleration : IComponentData
 	{
 		public float2 Value;
 	}
@@ -41,6 +52,28 @@ namespace AntsPheromones.Components
 
 	}
 
+	public struct PheromoneSteering : IComponentData
+	{
+		public float Value;
+	}
+	
+	public struct NearbyWallSteering : IComponentData
+	{
+		public float Value;
+	}
+
+	public struct TargetPosition : IComponentData
+	{
+		public float2 Value;
+	}
+	
+	public struct PositionsThisFrame : IBufferElementData
+	{
+		public int2 Value;
+		//public NativeList<int2> Value;
+	}
+	
+	
 	[Serializable]
 	public struct Resource : IComponentData
 	{
@@ -75,6 +108,10 @@ namespace AntsPheromones.Components
 		public Entity ObstaclePrefab;
 		public Entity PheromonePrefab;
 
+		[Header("Quad Tree")]
+		public int ObjectsPerNode;
+		
+		[Range(1, 15)] public int MaxDepth;
 
 		[Header("Obstacles")]
 		public float ObstacleFill;
@@ -85,7 +122,8 @@ namespace AntsPheromones.Components
 		[Header("Ants")]
 		public float AntTargetSpeed;
 		public float AntAcceleration;
-
+		public float AntScale;
+		
 		[Header("Steering")]
 		public float RandomSteering;
 

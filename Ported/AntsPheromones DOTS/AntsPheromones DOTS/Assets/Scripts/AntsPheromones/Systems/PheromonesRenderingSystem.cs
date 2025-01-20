@@ -2,6 +2,7 @@ using AntsPheromones.Components;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Rendering;
 using AntAspect = AntsPheromones.Components.AntAspect;
@@ -12,59 +13,64 @@ namespace AntsPheromones.Systems
 	public partial struct PheromonesRenderingSystem : ISystem
 	{
 		private EntityQuery _antsQuery;
-		
+
 		[BurstCompile]
 		public void OnCreate(ref SystemState state)
 		{
 			state.RequireForUpdate<Colony>();
 			_antsQuery = new EntityQueryBuilder(Allocator.Temp)
 				.WithAspect<AntAspect>().Build(ref state);
-			
+
 		}
 
 
 		[BurstCompile]
 		public void OnUpdate(ref SystemState state)
 		{
-			
-			
-			
+
+
 			float dt = SystemAPI.Time.DeltaTime;
 			var pheromonesBuffer = SystemAPI.GetSingletonBuffer<PheromoneBufferElement>();
 			var colony = SystemAPI.GetSingleton<Colony>();
-			
 
 			var bufferArray = pheromonesBuffer.AsNativeArray();
-			
-			var pheromoneUpdateJob = new PheromonesUpdateJob
+
+			var updateJob = new PheromonesUpdateJob
 			{
 				Colony = colony,
 				Buffer = bufferArray,
 				DeltaTime = dt,
 			};
+			state.Dependency = updateJob.ScheduleParallel(_antsQuery, state.Dependency);
+			state.Dependency.Complete();
 			
-			state.Dependency = pheromoneUpdateJob.ScheduleParallel(_antsQuery, state.Dependency);
+
+			var pheromoneDecayJob = new PheromoneDecayJob
+			{
+				Colony = colony,
+				Buffer = bufferArray
+			};
+			state.Dependency =	pheromoneDecayJob.ScheduleParallel(state.Dependency);
 			state.Dependency.Complete();
 
-			for (int i = 0; i < bufferArray.Length; i++)
+
+			for (int i = 0; i < pheromoneDecayJob.Buffer.Length; i++)
 			{
-				var element = bufferArray[i];
-				element.Strength -= (  colony.TrailDecaySpeed * colony.SimulationSpeed * dt);
-				if (element.Strength < 0f) element.Strength = 0f;
-				pheromonesBuffer[i] = element;
+				pheromonesBuffer[i] = pheromoneDecayJob.Buffer[i];
 			}
 			
 			
 			pheromonesBuffer = SystemAPI.GetSingletonBuffer<PheromoneBufferElement>();
-
-			var materialJob = new MaterialUpdateJob
+			
+			
+			state.Dependency = new MaterialUpdateJob
 			{
-				PheromonesBuffer = pheromonesBuffer,
-			};
+				PheromonesBuffer = pheromonesBuffer
+			}.ScheduleParallel(state.Dependency);
 
-			state.Dependency = materialJob.ScheduleParallel(state.Dependency);
 
 		}
+
 	}
 
 
@@ -79,37 +85,66 @@ namespace AntsPheromones.Systems
 			materialColor.Value = new float4(pheromoneBufferElement.Strength, 0f, 0f, 1f);
 		}
 	}
-	
+
+	[BurstCompile]
+	internal partial struct PheromoneDecayJob : IJobEntity
+	{
+
+		[ReadOnly] public Colony Colony;
+
+		[NativeDisableParallelForRestriction]
+		public NativeArray<PheromoneBufferElement> Buffer;
+
+		private void Execute([ReadOnly] in Pheromone pheromone)
+		{
+
+			PheromoneBufferElement element = Buffer[pheromone.Index];
+			;
+			for (int j = 0; j < Colony.SimulationSpeed; j++)
+			{
+				element.Strength *= Colony.TrailDecaySpeed;
+			}
+
+			;
+			Buffer[pheromone.Index] = element;
+		}
+	}
+
+
 	[WithAll(typeof(AntAspect))]
 	[BurstCompile]
-	partial struct PheromonesUpdateJob : IJobEntity
+	internal partial struct PheromonesUpdateJob : IJobEntity
 	{
 		[ReadOnly] public Colony Colony;
 		[NativeDisableParallelForRestriction]
 		public NativeArray<PheromoneBufferElement> Buffer;
-		
 		[ReadOnly] public float DeltaTime;
-		
-		void Execute(AntAspect ant, [EntityIndexInQuery] int _)
+
+
+		private void Execute(AntAspect ant, [EntityIndexInQuery] int _)
 		{
-			int x = (int)math.floor(ant.Position.x);
-			int y = (int)math.floor(ant.Position.y);
 
-			if (x < 0 || x >= Colony.MapSize || y < 0 || y >= Colony.MapSize) return;
-			
-			int index = x + y * (int)Colony.MapSize;
-			
-			PheromoneBufferElement pheromoneBufferElement = Buffer[index];
-			float pheromoneStrength = pheromoneBufferElement.Strength;
-			pheromoneStrength += (Colony.TrailAddSpeed * ant.Excitement * (Colony.SimulationSpeed * DeltaTime)) *  
-			                     (1f - pheromoneBufferElement.Strength);
-			
-			if (pheromoneStrength > 1f) pheromoneStrength = 1f;
+			var positions = ant.GetPositionsThisFrame();
+
+			foreach (PositionsThisFrame position in positions)
+			{
+				int x = position.Value.x;
+				int y = position.Value.y;
+
+				if (x < 0 || x >= Colony.MapSize || y < 0 || y >= Colony.MapSize) continue;
 
 
+				int index = x + y * (int)Colony.MapSize;
+				
+				PheromoneBufferElement pheromoneBufferElement = Buffer[index];
+				pheromoneBufferElement.Strength += 
+					(ant.Excitement * Colony.TrailAddSpeed * DeltaTime * Colony.SimulationSpeed)
+					*(1f - pheromoneBufferElement.Strength);
+				pheromoneBufferElement.Strength = math.clamp(pheromoneBufferElement.Strength, 0f, 1f);
+				Buffer[index] = pheromoneBufferElement;
+			}
 
-			pheromoneBufferElement.Strength = pheromoneStrength;
-			Buffer[index] = pheromoneBufferElement;
+			ant.ClearPositionsThisFrame();
 
 		}
 	}

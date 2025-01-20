@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 859621654315412212}
   - component: {fileID: 2576253625319518608}
   - component: {fileID: 4526066442121625766}
-  - component: {fileID: 4805919929972141677}
-  - component: {fileID: 4692759049041957279}
+  - component: {fileID: 1198199854165061646}
+  - component: {fileID: 7217302488114529699}
   m_Layer: 0
   m_Name: Ant
   m_TagString: Untagged
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85ab546d98cf48e7b656bb25786bc734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultColor: {r: 0.43625638, g: 0.43625638, b: 0.51572317, a: 1}
+  DefaultColor: {r: 0.23011349, g: 0.23011349, b: 0.408805, a: 1}
   HoldingResourceColor: {r: 1, g: 1, b: 0.28616333, a: 1}
 --- !u!114 &4526066442121625766
 MonoBehaviour:
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Value: 0.351
---- !u!33 &4805919929972141677
+--- !u!33 &1198199854165061646
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,7 +70,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2729890541814900973}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4692759049041957279
+--- !u!23 &7217302488114529699
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

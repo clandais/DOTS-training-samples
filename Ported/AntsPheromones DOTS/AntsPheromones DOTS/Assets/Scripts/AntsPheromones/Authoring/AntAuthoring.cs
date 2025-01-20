@@ -12,7 +12,11 @@ namespace AntsPheromones.Authoring
 		public Direction direction;
 		public Position position;
 		public Speed speed;
+		public Velocity velocity = new Velocity() { Value = float2.zero };
+		public Acceleration acceleration;
 
+		public PositionsThisFrame positionsThisFrame;
+		
 		public Color DefaultColor;
 		public Color HoldingResourceColor;
 		
@@ -29,7 +33,11 @@ namespace AntsPheromones.Authoring
 				AddComponent(entity, authoring.position);
 				AddComponent(entity, authoring.speed);
 				AddComponent(entity, authoring.direction);
-
+				AddComponent(entity, authoring.velocity);
+				AddComponent(entity, authoring.acceleration);
+				
+				// AddComponent(entity, authoring.positionsThisFrame);
+				
 				float4 defaultColor;
 				defaultColor.x = authoring.DefaultColor.linear.r;
 				defaultColor.y = authoring.DefaultColor.linear.g;

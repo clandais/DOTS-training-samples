@@ -50,19 +50,30 @@ namespace AntsPheromones.Systems
 
 		private void SpawnAnts(ref SystemState state, Colony colony)
 		{
+			
+			Random random = Random.CreateFromIndex(state.GlobalSystemVersion);
+			
 			state.EntityManager.Instantiate(colony.AntPrefab, colony.AntCount, Allocator.Temp);
 			float mapSize = colony.MapSize;
 
-			foreach (var (position, direction, localTransform, speed)
+			var ecb = new EntityCommandBuffer(Allocator.Temp);
+			
+			
+			foreach (var (position, direction, localTransform, speed, entity)
 			         in SystemAPI.Query<RefRW<Position>, RefRW<Direction>, RefRW<LocalTransform>, RefRW<Speed>>()
-				         .WithAll<Ant>())
+				         .WithAll<Ant>().WithEntityAccess())
 			{
-				position.ValueRW.Value = new float2(_random.NextFloat(-5f, 5f) + mapSize * .5f, _random.NextFloat(-5f, 5f) + mapSize * .5f);
-				direction.ValueRW.Value = 225;
-				speed.ValueRW.Value = colony.AntTargetSpeed;
-				//localTransform.ValueRW.Scale = colony.AntScale;
-				localTransform.ValueRW.Position = new float3(position.ValueRO.Value.x, 0f, position.ValueRO.Value.y);
+				float2 pos = new float2(random.NextFloat(-5f, 5f) + mapSize * .5f, random.NextFloat(-5f, 5f) + mapSize * .5f);
+			
+				ecb.SetComponent(entity, new Position { Value = pos });
+				ecb.SetComponent(entity, new Direction { Value = new float2(random.NextFloat(-1f, 1f), random.NextFloat(-1f, 1f)) });
+				ecb.SetComponent(entity, new Speed { Value = colony.AntTargetSpeed });
+				ecb.SetComponent(entity, new LocalTransform { Position = new float3(pos.x, 0f, pos.y), Scale = colony.AntScale });
+				ecb.AddBuffer<PositionsThisFrame>(entity);
 			}
+			
+			ecb.Playback(state.EntityManager);
+			ecb.Dispose();
 
 		}
 
@@ -81,7 +92,7 @@ namespace AntsPheromones.Systems
 				float circumference = 2f * math.PI * ringRadius;
 				int maxCount = (int)(circumference / (obstacleRadius * 2f) * 2f);
 				int offset = _random.NextInt(0, maxCount);
-				int holeCount = _random.NextInt(1, 3);
+				int holeCount = _random.NextInt(1, 6);
 
 				for (int j = 0; j < maxCount; ++j)
 				{
@@ -101,8 +112,16 @@ namespace AntsPheromones.Systems
 				}
 			}
 
+			int objectsPerNodes = colony.ObjectsPerNode;
+			
+			if (objectsPerNodes < 1)
+				objectsPerNodes = 1;
 
-			var quadTree = new NativeQuadtree<float2>(new AABB2D(new float2(0f, 0f), new float2(mapSize, mapSize)), 8, 10, Allocator.Persistent);
+			var quadTree = new NativeQuadtree<float2>(
+				new AABB2D(new float2(0f, 0f), new float2(mapSize, mapSize)),
+				objectsPerNodes,
+				colony.MaxDepth,
+				Allocator.Persistent);
 
 			foreach (float2 position in obstaclePositions)
 			{
@@ -133,7 +152,7 @@ namespace AntsPheromones.Systems
 			                  * mapSize * 0.475f;
 			state.EntityManager.SetComponentData(resource, LocalTransform.FromPosition(new float3(position.x, 0f, position.y)));
 			state.EntityManager.SetComponentData(resource, new Position { Value = position });
-			state.EntityManager.AddComponent<Resource>(resource);
+			// state.EntityManager.AddComponent<Resource>(resource);
 
 
 		}
@@ -150,7 +169,8 @@ namespace AntsPheromones.Systems
 		[BurstCompile]
 		public void OnDestroy(ref SystemState state)
 		{
-
+			var quadTree = SystemAPI.GetSingleton<ObstacleQuadTree>();
+			quadTree.Value.Dispose();
 		}
 	}
 }

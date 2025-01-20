@@ -1,5 +1,6 @@
 using AntsPheromones.Authoring;
 using AntsPheromones.Components;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -17,17 +18,51 @@ namespace AntsPheromones.Components
 		private readonly RefRW<Position> Pos;
 		private readonly RefRW<Direction> Dir;
 		private readonly RefRW<Speed> Spd;
+		private readonly RefRW<Velocity> Vel;
+		private readonly RefRW<Acceleration> Acc;
+		
 		private readonly RefRO<AntColors> BaseColors;
 
+		
 		private readonly  RefRW<URPMaterialPropertyBaseColor> BaseColor;
 
+		private readonly DynamicBuffer<PositionsThisFrame> PositionsThisFrame;
+		
+		
+		public void AddPositionThisFrame(int2 position)
+		{
+
+			foreach (PositionsThisFrame positionsThisFrame in PositionsThisFrame)
+			{
+				if (positionsThisFrame.Value.Equals(position))
+				{
+					return;
+				}
+			}
+			
+			PositionsThisFrame.Add( new PositionsThisFrame{ Value = position});
+		}
+		
+		
+		public NativeArray<PositionsThisFrame> GetPositionsThisFrame()
+		{
+			return PositionsThisFrame.AsNativeArray();
+		}
+		
+		public void ClearPositionsThisFrame()
+		{
+			PositionsThisFrame.Clear();
+		}
+		
+		
+		
 		public float2 Position
 		{
-			get => Pos.ValueRO.Value;
+			get => LocalTransform.ValueRO.Position.xz;
 			set
 			{
 				Pos.ValueRW.Value = value;
-				LocalTransform.ValueRW.Position = new float3(value.x, 0f, value.y);
+				LocalTransform.ValueRW.Position.xz = value;
 			}
 		}
 
@@ -51,6 +86,18 @@ namespace AntsPheromones.Components
 		{
 			get => Spd.ValueRO.Value;
 			set => Spd.ValueRW.Value = value;
+		}
+		
+		public float2 Velocity
+		{
+			get => Vel.ValueRO.Value;
+			set => Vel.ValueRW.Value = value;
+		}
+		
+		public float2 Acceleration
+		{
+			get => Acc.ValueRO.Value;
+			set => Acc.ValueRW.Value = value;
 		}
 
 		public quaternion Rotation

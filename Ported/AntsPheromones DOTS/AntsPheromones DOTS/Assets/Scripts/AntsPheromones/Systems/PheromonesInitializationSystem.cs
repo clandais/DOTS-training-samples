@@ -41,16 +41,16 @@ namespace AntsPheromones.Systems
 				LightProbeUsage = LightProbeUsage.Off
 			};
 
-			Entity _prototype = EntityManager.CreateEntity();
+			Entity prototype = EntityManager.CreateEntity();
 			RenderMeshUtility.AddComponents(
-				_prototype,
+				prototype,
 				EntityManager,
 				renderMeshDescription,
 				renderMeshArray,
 				MaterialMeshInfo.FromRenderMeshArrayIndices(0, 0));
 
-			EntityManager.AddComponentData(_prototype, new URPMaterialPropertyEmissionColor());
-			EntityManager.AddComponentData(_prototype, new Pheromone());
+			EntityManager.AddComponentData(prototype, new URPMaterialPropertyEmissionColor());
+			EntityManager.AddComponentData(prototype, new Pheromone());
 
 			var bounds = new RenderBounds
 			{
@@ -65,7 +65,7 @@ namespace AntsPheromones.Systems
 			var spawnJob = new SpawnJob
 			{
 				MapSize = (int)colony.MapSize,
-				Prototype = _prototype,
+				Prototype = prototype,
 				Ecb = ecb.AsParallelWriter(),
 				MeshBounds = bounds
 			};
@@ -97,7 +97,7 @@ namespace AntsPheromones.Systems
 
 			float2 position = new int2(index % MapSize, index / MapSize);
 
-			Ecb.SetComponent(index, e, new LocalToWorld { Value = float4x4.Translate(new float3(position.x, -1f, position.y)) });
+			Ecb.SetComponent(index, e, new LocalToWorld { Value = float4x4.Translate(new float3(position.x, -.5f, position.y)) });
 			Ecb.SetComponent(index, e, new URPMaterialPropertyEmissionColor());
 
 			Ecb.SetComponent(index, e, MeshBounds);

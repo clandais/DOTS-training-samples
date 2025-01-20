@@ -8,7 +8,7 @@ namespace AntsPheromones.Authoring
 	{
 		public Home home;
 		public Position position;
-		#region Nested type: ${0}
+		#region Baker
 
 		private class HomeAuthoringBaker : Baker<HomeAuthoring>
 		{

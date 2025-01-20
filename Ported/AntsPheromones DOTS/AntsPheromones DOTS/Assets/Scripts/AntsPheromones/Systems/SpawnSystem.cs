@@ -86,6 +86,18 @@ namespace AntsPheromones.Systems
 
 			var obstaclePositions = new NativeList<float2>(Allocator.Temp);
 
+			
+			int objectsPerNodes = colony.ObjectsPerNode;
+			
+			if (objectsPerNodes < 1)
+				objectsPerNodes = 1;
+
+			var quadTree = new NativeQuadtree<float2>(
+				new AABB2D(new float2(0f, 0f), new float2(mapSize, mapSize)),
+				objectsPerNodes,
+				colony.MaxDepth,
+				Allocator.Persistent);
+			
 			for (int i = 1; i <= ringCount; ++i)
 			{
 				float ringRadius = i / (ringCount + 1f) * (mapSize * .5f);
@@ -108,29 +120,17 @@ namespace AntsPheromones.Systems
 						localTransform.ValueRW.Position = new float3(obstaclePosition.x, 0f, obstaclePosition.y);
 
 						obstaclePositions.Add(obstaclePosition);
+						
+						quadTree.Insert(obstaclePosition,
+							new AABB2D(
+								obstaclePosition + new float2(-obstacleRadius, -obstacleRadius),
+								obstaclePosition + new float2(obstacleRadius, obstacleRadius)
+							));
 					}
 				}
 			}
 
-			int objectsPerNodes = colony.ObjectsPerNode;
 			
-			if (objectsPerNodes < 1)
-				objectsPerNodes = 1;
-
-			var quadTree = new NativeQuadtree<float2>(
-				new AABB2D(new float2(0f, 0f), new float2(mapSize, mapSize)),
-				objectsPerNodes,
-				colony.MaxDepth,
-				Allocator.Persistent);
-
-			foreach (float2 position in obstaclePositions)
-			{
-				quadTree.Insert(position,
-					new AABB2D(
-						position + new float2(-obstacleRadius, -obstacleRadius),
-						position + new float2(obstacleRadius, obstacleRadius)
-						));
-			}
 
 			var obstacleQuadTree = new ObstacleQuadTree { Value = quadTree };
 

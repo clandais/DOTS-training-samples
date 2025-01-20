@@ -10,7 +10,6 @@ namespace AntsPheromones.Components
 {
 	public readonly partial struct AntAspect : IAspect
 	{
-		public readonly Entity Self;
 
 		private readonly RefRW<LocalTransform> LocalTransform;
 		private readonly RefRW<Ant> Ant;
@@ -19,7 +18,6 @@ namespace AntsPheromones.Components
 		private readonly RefRW<Direction> Dir;
 		private readonly RefRW<Speed> Spd;
 		private readonly RefRW<Velocity> Vel;
-		private readonly RefRW<Acceleration> Acc;
 		
 		private readonly RefRO<AntColors> BaseColors;
 
@@ -94,17 +92,6 @@ namespace AntsPheromones.Components
 			set => Vel.ValueRW.Value = value;
 		}
 		
-		public float2 Acceleration
-		{
-			get => Acc.ValueRO.Value;
-			set => Acc.ValueRW.Value = value;
-		}
-
-		public quaternion Rotation
-		{
-			get => LocalTransform.ValueRO.Rotation;
-			set => LocalTransform.ValueRW.Rotation = value;
-		}
 
 		public bool IsHoldingResource
 		{

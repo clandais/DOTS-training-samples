@@ -26,11 +26,6 @@ namespace AntsPheromones.Components
 	{
 		public float2 Value;
 	}
-	
-	public struct Acceleration : IComponentData
-	{
-		public float2 Value;
-	}
 
 	public struct Direction : IComponentData
 	{
@@ -42,30 +37,13 @@ namespace AntsPheromones.Components
 		public float Value;
 	}
 
-	public struct Obstacle : IComponentData
-	{
-		public float2 Value;
-	}
+
 
 	public struct Home : IComponentData
 	{
 
 	}
-
-	public struct PheromoneSteering : IComponentData
-	{
-		public float Value;
-	}
 	
-	public struct NearbyWallSteering : IComponentData
-	{
-		public float Value;
-	}
-
-	public struct TargetPosition : IComponentData
-	{
-		public float2 Value;
-	}
 	
 	public struct PositionsThisFrame : IBufferElementData
 	{

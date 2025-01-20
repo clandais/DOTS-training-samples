@@ -17,7 +17,7 @@ namespace AntsPheromones.Authoring
 		public Colony colony;
 
 		#endregion
-		#region Nested type: ${0}
+		#region Baker
 
 		private class ColonyAuthoringBaker : Baker<ColonyAuthoring>
 		{

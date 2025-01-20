@@ -13,7 +13,6 @@ namespace AntsPheromones.Authoring
 		public Position position;
 		public Speed speed;
 		public Velocity velocity = new Velocity() { Value = float2.zero };
-		public Acceleration acceleration;
 
 		public PositionsThisFrame positionsThisFrame;
 		
@@ -34,7 +33,6 @@ namespace AntsPheromones.Authoring
 				AddComponent(entity, authoring.speed);
 				AddComponent(entity, authoring.direction);
 				AddComponent(entity, authoring.velocity);
-				AddComponent(entity, authoring.acceleration);
 				
 				// AddComponent(entity, authoring.positionsThisFrame);
 				

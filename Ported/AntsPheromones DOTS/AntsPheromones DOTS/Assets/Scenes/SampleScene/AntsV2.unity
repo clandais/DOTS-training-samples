@@ -204,10 +204,10 @@ MonoBehaviour:
     MapSize: 256
     ObjectsPerNode: 4
     MaxDepth: 12
-    ObstacleFill: 0.7
-    ObstacleRadius: 1.5
-    RingCount: 5
-    AntCount: 250000
+    ObstacleFill: 0.8
+    ObstacleRadius: 1.25
+    RingCount: 3
+    AntCount: 125000
     AntTargetSpeed: 0.8
     AntAcceleration: 0.05
     AntScale: 1

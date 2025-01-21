@@ -17,9 +17,14 @@ namespace AntsPheromones.Systems
 	
 	public partial class PheromonesInitializationSystem : SystemBase
 	{
-		
-		private Entity _prototype;
-		
+
+		protected override void OnCreate()
+		{
+			RequireForUpdate<Colony>();
+			RequireForUpdate<PheromoneSingleton>();
+			RequireForUpdate<PheromoneBufferElement>();
+		}
+
 		protected override void OnUpdate()
 		{
 			
@@ -76,7 +81,7 @@ namespace AntsPheromones.Systems
 
 		protected override void OnStopRunning()
 		{
-			EntityManager.DestroyEntity(_prototype);
+
 		}
 	}
 	

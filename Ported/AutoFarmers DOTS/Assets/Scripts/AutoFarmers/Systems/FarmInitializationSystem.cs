@@ -34,12 +34,14 @@ namespace AutoFarmers.Systems
     [BurstCompile]
     struct SpawnStoresJob : IJobParallelFor
     {
-        public EntityCommandBuffer.ParallelWriter ecb;
-        public NativeArray<bool> storeTileBuffer;
-        [ReadOnly] public Entity storePrefab;
+        public EntityCommandBuffer.ParallelWriter ECB;
+        [NativeDisableParallelForRestriction]
+        public NativeArray<bool> StoreTileBuffer;
+        [ReadOnly] public Entity StorePrefab;
         [ReadOnly] public int MapSize;
         [ReadOnly] public int MaxStores;
-        public int storeCount;
+        public int StoreCount;
+        [ReadOnly] public Random Rng;
         
         public void Execute(int index)
         {
@@ -48,23 +50,29 @@ namespace AutoFarmers.Systems
                 return;
             }
             
-            var x = index / MapSize;
-            var y = index % MapSize;
             
-            if (storeTileBuffer[index])
+            var x = Rng.NextInt(0, MapSize);
+            var y = Rng.NextInt(0, MapSize);
+            
+            var idx = x * MapSize + y;
+            
+            // var x = index / MapSize;
+           // var y = index % MapSize;
+            
+            if (StoreTileBuffer[idx] || StoreCount >= MaxStores)
             {
-                return;
+                
+            }
+            else
+            {
+                StoreTileBuffer[idx] = true;
+            
+                ECB.Instantiate(index, StorePrefab);
+                ECB.SetComponent(index, StorePrefab, LocalTransform.FromPosition( new float3(x, 0f, y)));
+                StoreCount++;
             }
             
-            if (storeCount >= MaxStores)
-            {
-                return;
-            }
-            
-            storeTileBuffer[index] = true;
-            
-            ecb.Instantiate(index, storePrefab);
-            ecb.SetComponent(index, storePrefab, LocalTransform.FromPosition( new float3(x, 0f, y)));
+
         }
     }
     
@@ -74,13 +82,13 @@ namespace AutoFarmers.Systems
         private bool _groundInitialized;
         private bool _storeInitialized;
         
-      //  [BurstCompile]
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<FarmCfg>();
             state.RequireForUpdate<Farm>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            rng = Random.CreateFromIndex((uint)DateTime.Now.Millisecond);
+            rng = Random.CreateFromIndex(state.GlobalSystemVersion);
         }
 
         [BurstCompile]
@@ -107,28 +115,25 @@ namespace AutoFarmers.Systems
                 MapSize = farm.MapSize,
             };
             
-           var groundSpawnHandle = groundSpawnJob.ScheduleParallel( state.Dependency);
+           var spawnGroundHandle  = groundSpawnJob.ScheduleParallel(state.Dependency);
+           spawnGroundHandle.Complete();
+           
            //ecb.Playback(state.EntityManager);
            // state.Dependency.Complete();
            
-           // groundSpawnHandle.Complete();
-            //
-            
             NativeArray<bool> storeTilesArray = new NativeArray<bool>(farm.MapSize * farm.MapSize, Allocator.TempJob);
             
             var storeSpawnJob = new SpawnStoresJob
             {
-                ecb = ecb.AsParallelWriter(),
-                storeTileBuffer = storeTilesArray,
-                storePrefab = farmCfg.StorePrefab,
+                ECB = ecb.AsParallelWriter(),
+                StoreTileBuffer = storeTilesArray,
+                StorePrefab = farmCfg.StorePrefab,
                 MapSize = farm.MapSize,
+                MaxStores = farm.StoreCount,
+                Rng = rng,
             };
-            var storeSpawnHandle = storeSpawnJob.Schedule( farm.MapSize * farm.MapSize, 64, state.Dependency);
-            //state.Dependency.Complete();
-
-            var combined = JobHandle.CombineDependencies(groundSpawnHandle, storeSpawnHandle);
-            
-            combined.Complete();
+            var spawnStoreHandle = storeSpawnJob.Schedule( farm.MapSize * farm.MapSize, 64, state.Dependency);
+            spawnStoreHandle.Complete();
             
             for (int i = 0; i < farm.MapSize*farm.MapSize; i++)
             {
@@ -137,54 +142,6 @@ namespace AutoFarmers.Systems
             
             storeTilesArray.Dispose();
             
-            // storeSpawnHandle.Complete();
-            
-            // ecb.Playback(state.EntityManager);
-            // ecb.Dispose();
-                
-                
-            // initialize bool buffer
-            
-
-            // var storeTileBuffer = state.EntityManager.AddBuffer<StoreTile>(farmEntity);
-            //
-            // storeTileBuffer.ResizeUninitialized( farm.MapSize * farm.MapSize );
-            //
-            // for (int x = 0; x < farm.MapSize; x++)
-            // {
-            //     for (int y = 0; y < farm.MapSize; y++)
-            //     {
-            //         var entity = state.EntityManager.Instantiate(farmCfg.GroundPrefab);
-            //         state.EntityManager.SetComponentData(entity, LocalTransform.FromPosition( new float3(x, 0f, y)));
-            //     }
-            // }
-            //
-            //
-            // if (!_storeInitialized)
-            // {
-            //     _storeInitialized = true;
-            //     
-            //     
-            //     int spawnCount = 0;
-            //     while (spawnCount < farm.StoreCount)
-            //     {
-            //         int x = rng.NextInt(0, farm.MapSize);
-            //         int y = rng.NextInt(0, farm.MapSize);
-            //         
-            //         int idx = x * farm.MapSize + y;
-            //         
-            //         if (storeTileBuffer[idx].IsOccupied)
-            //         {
-            //             continue;
-            //         }
-            //         
-            //         storeTileBuffer[idx] = new StoreTile {IsOccupied = true};
-            //         
-            //         var entity = state.EntityManager.Instantiate(farmCfg.StorePrefab);
-            //         state.EntityManager.SetComponentData(entity, LocalTransform.FromPosition( new float3(x, 0f, y)));
-            //         spawnCount++;
-            //     }
-            // }
         }
 
         [BurstCompile]

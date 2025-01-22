@@ -9,11 +9,8 @@ namespace AutoFarmers.Authoring
         {
             public override void Bake(RockAuthoring authoring)
             {
-                var entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new Rock
-                {
-                    
-                });
+                Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+                AddComponent(entity, new Rock());
             }
         }
     }
@@ -24,4 +21,3 @@ namespace AutoFarmers.Authoring
         public int StartHealth;
     }
 }
-

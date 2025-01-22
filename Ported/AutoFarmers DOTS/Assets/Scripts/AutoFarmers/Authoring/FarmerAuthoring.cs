@@ -14,7 +14,10 @@ namespace AutoFarmers.Authoring
             }
         }
     }
-    
-    public struct Farmer : IComponentData {}
+
+    public struct Farmer : IComponentData
+    {
+        public bool IsOriginal;
+    }
 }
 

@@ -11,19 +11,19 @@ namespace AutoFarmers.Authoring
         public GameObject rockPrefab;
         public GameObject groundPrefab;
         public GameObject storePrefab;
-        
-        
+
+
         private class FarmerSpawnerAuthoringBaker : Baker<FarmAuthoring>
         {
             public override void Bake(FarmAuthoring authoring)
             {
-                var entity = GetEntity(TransformUsageFlags.None);
+                Entity entity = GetEntity(TransformUsageFlags.None);
                 AddComponent(entity, new FarmCfg
                 {
                     FarmerPrefab = GetEntity(authoring.farmerPrefab, TransformUsageFlags.Dynamic),
                     RockPrefab = GetEntity(authoring.rockPrefab, TransformUsageFlags.Dynamic),
                     GroundPrefab = GetEntity(authoring.groundPrefab, TransformUsageFlags.Dynamic),
-                    StorePrefab = GetEntity(authoring.storePrefab, TransformUsageFlags.Dynamic)
+                    StorePrefab = GetEntity(authoring.storePrefab, TransformUsageFlags.Dynamic),
                 });
                 AddComponent(entity, authoring.farm);
             }
@@ -52,4 +52,3 @@ namespace AutoFarmers.Authoring
         public bool IsOccupied;
     }
 }
-

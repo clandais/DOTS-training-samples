@@ -168,7 +168,7 @@ MonoBehaviour:
     MaxFarmerCount: 300
     MapSize: 120
     StoreCount: 30
-  farmerPrefab: {fileID: 5554016896359997107, guid: 3d237c03df1737f4cbd883affd1a66c8, type: 3}
+  farmerPrefab: {fileID: 6562885309533671307, guid: 3d237c03df1737f4cbd883affd1a66c8, type: 3}
   rockPrefab: {fileID: 3543449648406188284, guid: 252f900f4985d1443a06e7aececdb6e4, type: 3}
   groundPrefab: {fileID: 2210858389459842157, guid: 0428529a3df803c4a98e15d0ac9943f3, type: 3}
   storePrefab: {fileID: 3514371591769926107, guid: d55253e8b1f3c4c4dbb8d94b16ee4aad, type: 3}

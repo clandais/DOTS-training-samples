@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace AutoFarmers.Authoring
@@ -45,10 +46,23 @@ namespace AutoFarmers.Authoring
         public int MaxFarmerCount;
         public int MapSize;
         public int StoreCount;
+        public int RockSpawnAttempts;
     }
 
     public struct StoreTile : IBufferElementData
     {
         public bool IsOccupied;
+    }
+    
+    public struct RockedTile : IBufferElementData
+    {
+        public bool IsOccupied;
+        public Rock Rock;
+    }
+
+    public struct GraphNode : IBufferElementData
+    {
+        public int2 Position;
+        public bool IsWalkable;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace AutoFarmers.Authoring
@@ -11,6 +12,7 @@ namespace AutoFarmers.Authoring
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new Rock());
+              //  AddComponent(entity, new PostTransformMatrix());
             }
         }
     }
@@ -19,5 +21,6 @@ namespace AutoFarmers.Authoring
     {
         public int Health;
         public int StartHealth;
+        public RectInt Rect;
     }
 }

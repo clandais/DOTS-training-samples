@@ -54,6 +54,12 @@ namespace AutoFarmers.Systems
                 state.EntityManager.SetComponentEnabled<TillGroundGoal>(entity, false);
                 state.EntityManager.SetComponentEnabled<PlantSeedsGoal>(entity, false);
                 state.EntityManager.SetComponentEnabled<SellPlantsGoal>(entity, false);
+                state.EntityManager.SetComponentEnabled<Pathing>(entity, false);
+                state.EntityManager.SetComponentEnabled<TargetComponent>(entity, false);
+
+             //   state.EntityManager.AddBuffer<PathBufferElement>(entity);
+                
+              //  state.EntityManager.SetComponentEnabled<NoneGoal>(entity, true);
                 
                 break;
 

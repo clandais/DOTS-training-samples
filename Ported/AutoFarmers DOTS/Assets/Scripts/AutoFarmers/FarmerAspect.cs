@@ -36,7 +36,9 @@ namespace AutoFarmers
 		private readonly Entity Entity;
 		readonly RefRW<Farmer> Farmer;
 		readonly RefRW<LocalTransform> LocalTransform;
-		readonly RefRW<IntentionComponent> IntentionComponent; 
+		readonly RefRW<IntentionComponent> IntentionComponent;
+		//DynamicBuffer<PathBufferElement> PathBufferElement;
+		
 		// readonly RefRW<IntentionComponent> IntentionComponent;
 		// readonly RefRW<TargetComponent> TargetComponent;
 		
@@ -46,6 +48,9 @@ namespace AutoFarmers
 		// 	set => IntentionComponent.ValueRW.Value = value;
 		// }
 
+		
+	//	public DynamicBuffer<PathBufferElement> PathBuffer => PathBufferElement;
+		
 		
 		public Entity GetEntity() => Entity;
 		
@@ -60,7 +65,7 @@ namespace AutoFarmers
 		// 	get => TargetComponent.ValueRO.Value;
 		// 	set => TargetComponent.ValueRW.Value = value;
 		// }
-		//
+		// //
 		// public Intention GetIntention()
 		// {
 		// 	return IntentionComponent.ValueRO.Value;
@@ -68,7 +73,7 @@ namespace AutoFarmers
 
 		public Intention PickNewIntention(Random rng)
 		{
-			int rand = rng.NextInt(0, 4);
+			int rand = rng.NextInt(0, 1);
 			var intention = Intention.None;
 			
 			switch (rand)
@@ -180,5 +185,6 @@ namespace AutoFarmers
 		{
 			return IntentionComponent.ValueRO.Value;
 		}
+		
 	}
 }

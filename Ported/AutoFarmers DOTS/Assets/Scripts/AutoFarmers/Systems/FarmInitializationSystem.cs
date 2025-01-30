@@ -1,4 +1,5 @@
-﻿using AutoFarmers.Authoring;
+﻿using System;
+using AutoFarmers.Authoring;
 using AutoFarmers.Systems.Jobs;
 using Unity.Burst;
 using Unity.Collections;
@@ -18,13 +19,13 @@ namespace AutoFarmers.Systems
 		private Random _rng;
 
 		
-		[BurstCompile]
+		// [BurstCompile]
 		public void OnCreate(ref SystemState state)
 		{
 			state.RequireForUpdate<FarmCfg>();
 			state.RequireForUpdate<Farm>();
 			state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-			_rng = Random.CreateFromIndex(state.GlobalSystemVersion);
+			_rng = Random.CreateFromIndex((uint)DateTime.Now.Millisecond);
 		}
 
 		[BurstCompile]

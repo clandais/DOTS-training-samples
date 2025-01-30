@@ -1,22 +1,20 @@
 using AutoFarmers.Authoring;
 using AutoFarmers.Systems.Jobs.Famer;
-using NativeTrees;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.Transforms;
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
-namespace AutoFarmers.Systems
+namespace AutoFarmers.Systems.FarmerStates
 {
-	[UpdateAfter(typeof(PathFindingInitialisationSystem))]
+	//[UpdateAfter(typeof(PathFindingInitialisationSystem))]
 	public partial struct FarmerNoneIntentionUpdateSystem : ISystem
 	{
 
 		private EntityQuery _farmerQuery;
 		private Random _rng;
-		
+
 		[BurstCompile]
 		public void OnCreate(ref SystemState state)
 		{
@@ -25,26 +23,28 @@ namespace AutoFarmers.Systems
 			state.RequireForUpdate<Farm>();
 
 			_farmerQuery = new EntityQueryBuilder(Allocator.Temp)
-				.WithAll<NoneGoal>()
 				.WithAspect<FarmerAspect>()
+				.WithAll<NoneGoal>()
 				.Build(ref state);
 			
+			_rng = Random.CreateFromIndex(state.GlobalSystemVersion);
+			state.RequireForUpdate(_farmerQuery);
+
 		}
 
-		[BurstCompile]
+	//	[BurstCompile]
 		public void OnUpdate(ref SystemState state)
 		{
 			var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-			var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-			
-			_rng = Random.CreateFromIndex(state.GlobalSystemVersion);
-			
-			var job = new FarmerIdle()
+			EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+
+			var job = new FarmerIdle
 			{
 				Rng = _rng,
-				CommandBuffer = ecb.AsParallelWriter(),
+				CommandBuffer = ecb.AsParallelWriter()
 			};
-			
+
 			state.Dependency = job.ScheduleParallel(_farmerQuery, state.Dependency);
 
 		}

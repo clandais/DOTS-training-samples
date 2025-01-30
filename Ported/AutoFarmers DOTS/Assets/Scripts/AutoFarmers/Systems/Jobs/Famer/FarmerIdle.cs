@@ -3,13 +3,13 @@ using AutoFarmers.Authoring;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace AutoFarmers.Systems.Jobs.Famer
 {
 	[WithAll(typeof(FarmerAspect))]
-	[WithAll(typeof(NoneGoal))]
-	[BurstCompile]
+//	[BurstCompile]
 	public partial struct FarmerIdle : IJobEntity
 	{
 		
@@ -21,7 +21,12 @@ namespace AutoFarmers.Systems.Jobs.Famer
 
 			var lastIntention = farmer.GetIntention();
 			var intention = farmer.PickNewIntention(Rng);
+			
+		//	CommandBuffer.SetComponentEnabled<TargetComponent>(index, farmer.GetEntity(), false);
 
+			
+			Debug.Log($"Farmer {index} changed intention from {lastIntention} to {intention}");
+			
 			switch (intention)
 			{
 
